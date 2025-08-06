@@ -1,0 +1,36 @@
+[Unit]
+Description=FastLove Django application
+After=network.target
+After=postgresql.service
+Requires=postgresql.service
+
+[Service]
+Type=exec
+User=fastlove
+Group=fastlove
+WorkingDirectory=/home/fastlove/fastlove
+ExecStart=/home/fastlove/venv/bin/gunicorn --bind 127.0.0.1:8000 --workers 3 fastlove.wsgi:application
+ExecReload=/bin/kill -s HUP $MAINPID
+Restart=always
+RestartSec=10
+
+# Переменные окружения
+EnvironmentFile=/home/fastlove/fastlove/.env
+
+# Ограничения ресурсов
+MemoryMax=512M
+CPUQuota=100%
+
+# Безопасность
+NoNewPrivileges=true
+ProtectSystem=strict
+ProtectHome=true
+ReadWritePaths=/home/fastlove/fastlove
+PrivateTmp=true
+ProtectHostname=true
+ProtectKernelTunables=true
+ProtectKernelModules=true
+ProtectControlGroups=true
+
+[Install]
+WantedBy=multi-user.target
